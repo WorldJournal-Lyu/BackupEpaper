@@ -51,20 +51,24 @@ $externalHD = (Get-WmiObject win32_logicaldisk | Where-Object{$_.VolumeName -eq 
 $exepaper   = $externalHD.DeviceID + "\epaper\"
 $workDate   = (Get-Date).AddDays(0)
 $wc         = New-Object System.Net.WebClient
-$pubcodes   = @("NJ", "BO", "CH", "DC", "AT", "NY")
+$pubcodes   = @("AT", "BO", "CH", "DC", "NJ", "NY")
 
 Write-Log -Verb "eppub   " -Noun $eppub -Path $log -Type Short -Status Normal
 Write-Log -Verb "epaper  " -Noun $epaper -Path $log -Type Short -Status Normal
 Write-Log -Verb "exepaper" -Noun $exepaper -Path $log -Type Short -Status Normal
 Write-Line -Length 100 -Path $log
 
-if(Test-Path $exepaper){
+if($externalHD.VolumeName -eq $volumeName){
+
+    Write-Log -Verb "HDD CHECK" -Noun $volumeName -Path $log -Type Long -Status Good
+    Write-Line -Length 100 -Path $log
 
     foreach($pubcode in $pubcodes){
 
         $jsonFileName   = $pubcode + "-" + $workDate.tostring("yyyy-MM-dd") + ".json" 
         $remoteFilePath = $eppub + $pubcode.ToLower() + "/" + $jsonFileName
         $localFilePath  = $exepaper + $jsonFileName
+        Write-Log -Verb "pubcode       " -Noun $pubcode -Path $log -Type Short -Status Normal
         Write-Log -Verb "jsonFileName  " -Noun $jsonFileName -Path $log -Type Short -Status Normal
         Write-Log -Verb "remoteFilePath" -Noun $remoteFilePath -Path $log -Type Short -Status Normal
         Write-Log -Verb "localFilePath " -Noun $localFilePath -Path $log -Type Short -Status Normal
@@ -72,19 +76,78 @@ if(Test-Path $exepaper){
         Write-Log -Verb "DOWNLOAD FROM" -Noun $remoteFilePath -Path $log -Type Long -Status Normal
         Write-Log -Verb "DOWNLOAD TO" -Noun $localFilePath -Path $log -Type Long -Status Normal
 
+
+
+        # Download json 
+
         try{
+
             $wc.DownloadFile($remoteFilePath, $localFilePath)
             Write-Log -Verb "DOWNLOAD" -Noun $remoteFilePath -Path $log -Type Long -Status Good
+
+            try{
+
+                $json = Get-Content $localFilePath | ConvertFrom-Json
+                Write-Log -Verb "JSON CHECK" -Noun $remoteFilePath -Path $log -Type Long -Status Good
+                Write-Log -Verb "pubdatetime   " -Noun $json.pubdatetime -Path $log -Type Short -Status Normal
+
+            }catch{
+
+                $mailMsg = $mailMsg + (Write-Log -Verb "JSON CHECK" -Noun $remoteFilePath -Path $log -Type Long -Status Bad -Output String) + "`n"
+                $hasError = $true
+
+            }
+
         }catch{
-            Write-Log -Verb "DOWNLOAD" -Noun $remoteFilePath -Path $log -Type Long -Status Bad
+
+            $mailMsg = $mailMsg + (Write-Log -Verb "DOWNLOAD" -Noun $remoteFilePath -Path $log -Type Long -Status Bad -Output String) + "`n"
+            $hasError = $true
+
         }
 
+        Write-Line -Length 100 -Path $log
+
+
+
+        # Backup Jpg
+
+        Get-ChildItem ($epaper + $workDate.ToString("yyyyMMdd") + "\upload") -Filter ($pubcode+$workDate.ToString("yyyyMMdd")+"*.jpg") | ForEach-Object{
+
+            $copyFrom = $_.FullName
+            $copyTo   = $exepaper + $_.Name
+            Write-Log -Verb "copyFrom" -Noun $copyFrom -Path $log -Type Short -Status Normal
+            Write-Log -Verb "copyTo  " -Noun $copyTo -Path $log -Type Short -Status Normal
+
+            try{
+
+                Copy-Item $copyFrom $copyTo
+                Write-Log -Verb "COPY" -Noun $copyFrom -Path $log -Type Long -Status Good
+
+            }catch{
+
+                $mailMsg = $mailMsg + (Write-Log -Verb "COPY" -Noun $copyFrom -Path $log -Type Long -Status Bad) + "`n"
+                $hasError = $true
+           
+            }
+
+        }
+
+        Write-Line -Length 100 -Path $log
+
     }
-       
+
+
+
+    # Check available size
+
+    $externalHD = (Get-WmiObject win32_logicaldisk | Where-Object{$_.VolumeName -eq $volumeName})
+    $mailMsg = $mailMsg + (Write-Log -Verb "DISK SPACE" -Noun ("{0:N2}" -f ($externalHD.FreeSpace / 1GB) + " GB Available on " + $externalHD.VolumeName + " (" + $externalHD.DeviceID + ")") -Path $log -Type Long -Status Normal -Output String) + "`n"
+
 }else{
 
-    $mailMsg = $mailMsg + (Write-Log -Verb "CANNOT FIND" -Noun $volumeName -Path $log -Type Long -Status Bad -Output String)
-    
+    $mailMsg = $mailMsg + (Write-Log -Verb "HDD CHECK" -Noun $volumeName -Path $log -Type Long -Status Bad -Output String) + "`n"
+    $hasError = $true
+
 }
 
 
