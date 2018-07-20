@@ -53,8 +53,8 @@ $workDate   = (Get-Date).AddDays(0)
 $wc         = New-Object System.Net.WebClient
 $pubcodes   = @("AT", "BO", "CH", "DC", "NJ", "NY")
 
-Write-Log -Verb "eppub   " -Noun $eppub -Path $log -Type Short -Status Normal
-Write-Log -Verb "epaper  " -Noun $epaper -Path $log -Type Short -Status Normal
+Write-Log -Verb "eppub" -Noun $eppub -Path $log -Type Short -Status Normal
+Write-Log -Verb "epaper" -Noun $epaper -Path $log -Type Short -Status Normal
 Write-Log -Verb "exepaper" -Noun $exepaper -Path $log -Type Short -Status Normal
 Write-Line -Length 38 -Path $log
 
@@ -68,10 +68,10 @@ if($externalHD.VolumeName -eq $volumeName){
         $jsonFileName   = $pubcode + "-" + $workDate.tostring("yyyy-MM-dd") + ".json" 
         $remoteFilePath = $eppub + $pubcode.ToLower() + "/" + $jsonFileName
         $localFilePath  = $exepaper + $jsonFileName
-        Write-Log -Verb "pubcode       " -Noun $pubcode -Path $log -Type Short -Status Normal
-        Write-Log -Verb "jsonFileName  " -Noun $jsonFileName -Path $log -Type Short -Status Normal
+        Write-Log -Verb "pubcode" -Noun $pubcode -Path $log -Type Short -Status Normal
+        Write-Log -Verb "jsonFileName" -Noun $jsonFileName -Path $log -Type Short -Status Normal
         Write-Log -Verb "remoteFilePath" -Noun $remoteFilePath -Path $log -Type Short -Status Normal
-        Write-Log -Verb "localFilePath " -Noun $localFilePath -Path $log -Type Short -Status Normal
+        Write-Log -Verb "localFilePath" -Noun $localFilePath -Path $log -Type Short -Status Normal
 
         Write-Log -Verb "DOWNLOAD FROM" -Noun $remoteFilePath -Path $log -Type Long -Status Normal
         Write-Log -Verb "DOWNLOAD TO" -Noun $localFilePath -Path $log -Type Long -Status Normal
