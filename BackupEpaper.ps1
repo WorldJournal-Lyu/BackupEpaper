@@ -34,7 +34,7 @@ $localTemp = "C:\temp\" + $scriptName + "\"
 if (!(Test-Path($localTemp))) {New-Item $localTemp -Type Directory | Out-Null}
 
 Write-Log -Verb "LOG START" -Noun $log -Path $log -Type Long -Status Normal
-Write-Line -Length 50 -Path $log
+Write-Line -Length 38 -Path $log
 
 ###################################################################################
 
@@ -56,12 +56,12 @@ $pubcodes   = @("AT", "BO", "CH", "DC", "NJ", "NY")
 Write-Log -Verb "eppub   " -Noun $eppub -Path $log -Type Short -Status Normal
 Write-Log -Verb "epaper  " -Noun $epaper -Path $log -Type Short -Status Normal
 Write-Log -Verb "exepaper" -Noun $exepaper -Path $log -Type Short -Status Normal
-Write-Line -Length 50 -Path $log
+Write-Line -Length 38 -Path $log
 
 if($externalHD.VolumeName -eq $volumeName){
 
     Write-Log -Verb "HDD CHECK" -Noun $volumeName -Path $log -Type Long -Status Good
-    Write-Line -Length 50 -Path $log
+    Write-Line -Length 38 -Path $log
 
     foreach($pubcode in $pubcodes){
 
@@ -105,7 +105,7 @@ if($externalHD.VolumeName -eq $volumeName){
 
         }
 
-        Write-Line -Length 50 -Path $log
+        Write-Line -Length 38 -Path $log
 
 
 
@@ -116,7 +116,7 @@ if($externalHD.VolumeName -eq $volumeName){
             $copyFrom = $_.FullName
             $copyTo   = $exepaper + $_.Name
             Write-Log -Verb "copyFrom" -Noun $copyFrom -Path $log -Type Short -Status Normal
-            Write-Log -Verb "copyTo  " -Noun $copyTo -Path $log -Type Short -Status Normal
+            Write-Log -Verb "copyTo" -Noun $copyTo -Path $log -Type Short -Status Normal
 
             try{
 
@@ -132,7 +132,7 @@ if($externalHD.VolumeName -eq $volumeName){
 
         }
 
-        Write-Line -Length 50 -Path $log
+        Write-Line -Length 38 -Path $log
 
     }
 
@@ -175,7 +175,7 @@ if( $false ){
 
 ###################################################################################
 
-Write-Line -Length 50 -Path $log
+Write-Line -Length 38 -Path $log
 Write-Log -Verb "LOG END" -Noun $log -Path $log -Type Long -Status Normal
 if($hasError){ $mailSbj = "ERROR " + $scriptName }
 
