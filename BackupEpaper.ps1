@@ -65,11 +65,11 @@ if($externalHD.VolumeName -eq $volumeName){
 
     foreach($pubcode in $pubcodes){
 
-        $jsonFileName = $pubcode + "-" + $workDate.tostring("yyyy-MM-dd") + ".json" 
-        $downloadFrom = $eppub + $pubcode.ToLower() + "/" + $jsonFileName
-        $downloadTo   = $exepaper + $jsonFileName
+        $jsonName = $pubcode + "-" + $workDate.tostring("yyyy-MM-dd") + ".json" 
+        $downloadFrom = $eppub + $pubcode.ToLower() + "/" + $jsonName
+        $downloadTo   = $exepaper + $jsonName
         Write-Log -Verb "pubcode" -Noun $pubcode -Path $log -Type Short -Status Normal
-        Write-Log -Verb "jsonFileName" -Noun $jsonFileName -Path $log -Type Short -Status Normal
+        Write-Log -Verb "jsonName" -Noun $jsonName -Path $log -Type Short -Status Normal
         Write-Log -Verb "downloadFrom" -Noun $downloadFrom -Path $log -Type Short -Status Normal
         Write-Log -Verb "downloadTo" -Noun $downloadTo -Path $log -Type Short -Status Normal
 
