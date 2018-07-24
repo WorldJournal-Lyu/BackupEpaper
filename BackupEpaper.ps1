@@ -80,24 +80,24 @@ if($externalHD.VolumeName -eq $volumeName){
         try{
 
             $wc.DownloadFile($downloadFrom, $downloadTo)
-            Write-Log -Verb "DOWNLOAD" -Noun $downloadFrom -Path $log -Type Long -Status Good
+            Write-Log -Verb "DOWNLOAD" -Noun $downloadTo -Path $log -Type Long -Status Good
 
             try{
 
                 $json = Get-Content $downloadTo | ConvertFrom-Json
-                Write-Log -Verb "JSON CHECK" -Noun $downloadFrom -Path $log -Type Long -Status Good
+                Write-Log -Verb "JSON CHECK" -Noun $downloadTo -Path $log -Type Long -Status Good
                 Write-Log -Verb "pubdatetime" -Noun $json.pubdatetime -Path $log -Type Short -Status Normal
 
             }catch{
 
-                $mailMsg = $mailMsg + (Write-Log -Verb "JSON CHECK" -Noun $downloadFrom -Path $log -Type Long -Status Bad -Output String) + "`n"
+                $mailMsg = $mailMsg + (Write-Log -Verb "JSON CHECK" -Noun $downloadTo -Path $log -Type Long -Status Bad -Output String) + "`n"
                 $hasError = $true
 
             }
 
         }catch{
 
-            $mailMsg = $mailMsg + (Write-Log -Verb "DOWNLOAD" -Noun $downloadFrom -Path $log -Type Long -Status Bad -Output String) + "`n"
+            $mailMsg = $mailMsg + (Write-Log -Verb "DOWNLOAD" -Noun $downloadTo -Path $log -Type Long -Status Bad -Output String) + "`n"
             $hasError = $true
 
         }
@@ -118,11 +118,11 @@ if($externalHD.VolumeName -eq $volumeName){
             try{
 
                 Copy-Item $copyFrom $copyTo
-                Write-Log -Verb "COPY" -Noun $copyFrom -Path $log -Type Long -Status Good
+                Write-Log -Verb "COPY" -Noun $copyTo -Path $log -Type Long -Status Good
 
             }catch{
 
-                $mailMsg = $mailMsg + (Write-Log -Verb "COPY" -Noun $copyFrom -Path $log -Type Long -Status Bad) + "`n"
+                $mailMsg = $mailMsg + (Write-Log -Verb "COPY" -Noun $copyTo -Path $log -Type Long -Status Bad) + "`n"
                 $hasError = $true
            
             }
