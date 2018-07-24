@@ -65,16 +65,13 @@ if($externalHD.VolumeName -eq $volumeName){
 
     foreach($pubcode in $pubcodes){
 
-        $jsonFileName   = $pubcode + "-" + $workDate.tostring("yyyy-MM-dd") + ".json" 
-        $remoteFilePath = $eppub + $pubcode.ToLower() + "/" + $jsonFileName
-        $localFilePath  = $exepaper + $jsonFileName
+        $jsonFileName = $pubcode + "-" + $workDate.tostring("yyyy-MM-dd") + ".json" 
+        $downloadFrom = $eppub + $pubcode.ToLower() + "/" + $jsonFileName
+        $downloadTo   = $exepaper + $jsonFileName
         Write-Log -Verb "pubcode" -Noun $pubcode -Path $log -Type Short -Status Normal
         Write-Log -Verb "jsonFileName" -Noun $jsonFileName -Path $log -Type Short -Status Normal
-        Write-Log -Verb "remoteFilePath" -Noun $remoteFilePath -Path $log -Type Short -Status Normal
-        Write-Log -Verb "localFilePath" -Noun $localFilePath -Path $log -Type Short -Status Normal
-
-        Write-Log -Verb "DOWNLOAD FROM" -Noun $remoteFilePath -Path $log -Type Long -Status Normal
-        Write-Log -Verb "DOWNLOAD TO" -Noun $localFilePath -Path $log -Type Long -Status Normal
+        Write-Log -Verb "downloadFrom" -Noun $downloadFrom -Path $log -Type Short -Status Normal
+        Write-Log -Verb "downloadTo" -Noun $downloadTo -Path $log -Type Short -Status Normal
 
 
 
@@ -82,25 +79,25 @@ if($externalHD.VolumeName -eq $volumeName){
 
         try{
 
-            $wc.DownloadFile($remoteFilePath, $localFilePath)
-            Write-Log -Verb "DOWNLOAD" -Noun $remoteFilePath -Path $log -Type Long -Status Good
+            $wc.DownloadFile($downloadFrom, $downloadTo)
+            Write-Log -Verb "DOWNLOAD" -Noun $downloadFrom -Path $log -Type Long -Status Good
 
             try{
 
-                $json = Get-Content $localFilePath | ConvertFrom-Json
-                Write-Log -Verb "JSON CHECK" -Noun $remoteFilePath -Path $log -Type Long -Status Good
-                Write-Log -Verb "pubdatetime   " -Noun $json.pubdatetime -Path $log -Type Short -Status Normal
+                $json = Get-Content $downloadTo | ConvertFrom-Json
+                Write-Log -Verb "JSON CHECK" -Noun $downloadFrom -Path $log -Type Long -Status Good
+                Write-Log -Verb "pubdatetime" -Noun $json.pubdatetime -Path $log -Type Short -Status Normal
 
             }catch{
 
-                $mailMsg = $mailMsg + (Write-Log -Verb "JSON CHECK" -Noun $remoteFilePath -Path $log -Type Long -Status Bad -Output String) + "`n"
+                $mailMsg = $mailMsg + (Write-Log -Verb "JSON CHECK" -Noun $downloadFrom -Path $log -Type Long -Status Bad -Output String) + "`n"
                 $hasError = $true
 
             }
 
         }catch{
 
-            $mailMsg = $mailMsg + (Write-Log -Verb "DOWNLOAD" -Noun $remoteFilePath -Path $log -Type Long -Status Bad -Output String) + "`n"
+            $mailMsg = $mailMsg + (Write-Log -Verb "DOWNLOAD" -Noun $downloadFrom -Path $log -Type Long -Status Bad -Output String) + "`n"
             $hasError = $true
 
         }
