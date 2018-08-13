@@ -10,12 +10,6 @@ if (!($env:PSModulePath -match 'C:\\PowerShell\\_Modules')) {
     $env:PSModulePath = $env:PSModulePath + ';C:\PowerShell\_Modules\'
 }
 
-Import-Module WorldJournal.Ftp -Verbose -Force
-Import-Module WorldJournal.Log -Verbose -Force
-Import-Module WorldJournal.Email -Verbose -Force
-Import-Module WorldJournal.Server -Verbose -Force
-Import-Module WorldJournal.Database -Verbose -Force
-
 $scriptPath = $MyInvocation.MyCommand.Path
 $scriptName = (($MyInvocation.MyCommand) -Replace ".ps1")
 $hasError   = $false
@@ -50,12 +44,19 @@ $volumeName = "FantomHD"
 $externalHD = (Get-WmiObject win32_logicaldisk | Where-Object{$_.VolumeName -eq $volumeName})
 $exepaper   = $externalHD.DeviceID + "\epaper\"
 $workDate   = (Get-Date).AddDays(0)
+$workDay    = $workDate.DayOfWeek.value__
 $wc         = New-Object System.Net.WebClient
-$pubcodes   = @("AT", "BO", "CH", "DC", "NJ", "NY")
+if($workDay -eq 0){
+    $pubcodes = @("AT", "BO", "CH", "DC", "NJ", "NY", "NW")
+}else{
+    $pubcodes = @("AT", "BO", "CH", "DC", "NJ", "NY")
+}
+
 
 Write-Log -Verb "eppub" -Noun $eppub -Path $log -Type Short -Status Normal
 Write-Log -Verb "epaper" -Noun $epaper -Path $log -Type Short -Status Normal
 Write-Log -Verb "exepaper" -Noun $exepaper -Path $log -Type Short -Status Normal
+Write-Log -Verb "workDate" -Noun $workDate -Path $log -Type Short -Status Normal
 Write-Line -Length 50 -Path $log
 
 if($externalHD.VolumeName -eq $volumeName){
