@@ -156,6 +156,11 @@ if($externalHD.VolumeName -eq $volumeName){
 
 
 
+
+###################################################################################
+
+Write-Line -Length 50 -Path $log
+
 # Delete temp folder
 
 Write-Log -Verb "REMOVE" -Noun $localTemp -Path $log -Type Long -Status Normal
@@ -167,16 +172,6 @@ try{
     $mailMsg = $mailMsg + (Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Bad -Output String) + "`n"
     $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception.Message -Path $log -Type Short -Status Bad -Output String) + "`n"
 }
-
-# Flag hasError 
-
-if( $false ){
-    $hasError = $true
-}
-
-
-
-###################################################################################
 
 Write-Line -Length 50 -Path $log
 Write-Log -Verb "LOG END" -Noun $log -Path $log -Type Long -Status Normal
