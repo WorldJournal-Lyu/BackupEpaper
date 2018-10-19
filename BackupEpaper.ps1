@@ -67,6 +67,10 @@ if($externalHD.VolumeName -eq $volumeName){
     Write-Log -Verb "HDD CHECK" -Noun $volumeName -Path $log -Type Long -Status Good
     Write-Line -Length 50 -Path $log
 
+
+
+    # Download json 
+
     foreach($pubcode in $pubcodes){
 
         $jsonName = $pubcode + "-" + $workDate.tostring("yyyy-MM-dd") + ".json" 
@@ -76,10 +80,6 @@ if($externalHD.VolumeName -eq $volumeName){
         Write-Log -Verb "jsonName" -Noun $jsonName -Path $log -Type Short -Status Normal
         Write-Log -Verb "downloadFrom" -Noun $downloadFrom -Path $log -Type Short -Status Normal
         Write-Log -Verb "downloadTo" -Noun $downloadTo -Path $log -Type Short -Status Normal
-
-
-
-        # Download json 
 
         try{
 
@@ -109,37 +109,35 @@ if($externalHD.VolumeName -eq $volumeName){
 
         Write-Line -Length 50 -Path $log
 
-
-
-        # Backup Jpg
-
-        Get-ChildItem ($epaper + $workDate.ToString("yyyyMMdd") + "\upload") -Filter ($pubcode+$workDate.ToString("yyyyMMdd")+"*.jpg") | ForEach-Object{
-
-            $copyFrom = $_.FullName
-            $copyTo   = $exepaper + $_.Name
-            Write-Log -Verb "copyFrom" -Noun $copyFrom -Path $log -Type Short -Status Normal
-            Write-Log -Verb "copyTo" -Noun $copyTo -Path $log -Type Short -Status Normal
-
-            try{
-
-                Write-Log -Verb "COPY FROM" -Noun $copyFrom -Path $log -Type Long -Status Good
-                Copy-Item $copyFrom $copyTo
-                Write-Log -Verb "COPY TO" -Noun $copyTo -Path $log -Type Long -Status Good
-
-            }catch{
-
-                $mailMsg = $mailMsg + (Write-Log -Verb "COPY TO" -Noun $copyTo -Path $log -Type Long -Status Bad) + "`n"
-                $hasError = $true
-           
-            }
-
-        }
-
-        Write-Line -Length 50 -Path $log
-
     }
 
 
+
+    # Backup Jpg
+
+    Get-ChildItem ($epaper + $workDate.ToString("yyyyMMdd") + "\upload") -Filter *.jpg | ForEach-Object{
+
+        $copyFrom = $_.FullName
+        $copyTo   = $exepaper + $_.Name
+        Write-Log -Verb "copyFrom" -Noun $copyFrom -Path $log -Type Short -Status Normal
+        Write-Log -Verb "copyTo" -Noun $copyTo -Path $log -Type Short -Status Normal
+
+        try{
+
+            Write-Log -Verb "COPY FROM" -Noun $copyFrom -Path $log -Type Long -Status Good
+            Copy-Item $copyFrom $copyTo
+            Write-Log -Verb "COPY TO" -Noun $copyTo -Path $log -Type Long -Status Good
+
+        }catch{
+
+            $mailMsg = $mailMsg + (Write-Log -Verb "COPY TO" -Noun $copyTo -Path $log -Type Long -Status Bad) + "`n"
+            $hasError = $true
+           
+        }
+
+    }
+
+    Write-Line -Length 50 -Path $log
 
     # Check available size
 
