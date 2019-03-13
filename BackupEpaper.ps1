@@ -45,7 +45,7 @@ $epaper = (Get-WJPath -Name epaper).Path
 $eppub  = (Get-WJHTTP -Name epaper_production).Path + "pub/"
 $volumeName = "FantomHD"
 $externalHD = (Get-WmiObject win32_logicaldisk | Where-Object{$_.VolumeName -eq $volumeName})
-$exepaper   = $externalHD.DeviceID + "\epaper\"
+$exepaper   = $externalHD.DeviceID + "\ep\"
 $workDate   = (Get-Date).AddDays(0)
 $workDay    = $workDate.DayOfWeek.value__
 $wc         = New-Object System.Net.WebClient
@@ -69,9 +69,13 @@ if($externalHD.VolumeName -eq $volumeName){
 
     foreach($pubcode in $pubcodes){
 
+        $destination = $exepaper + $workDate.ToString("yyyyMMdd") + "/" + $pubcode + "/"
+        if (!(Test-Path($destination))) {New-Item $destination -Type Directory | Out-Null}
+        Write-Log -Verb "CREATE" -Noun $destination -Path $log -Type Long -Status System
+        
         $jsonName = $pubcode + "-" + $workDate.tostring("yyyy-MM-dd") + ".json" 
         $downloadFrom = $eppub + $pubcode.ToLower() + "/" + $jsonName
-        $downloadTo   = $exepaper + $jsonName
+        $downloadTo   = $destination + $jsonName
         Write-Log -Verb "pubcode" -Noun $pubcode -Path $log -Type Short -Status Normal
         Write-Log -Verb "jsonName" -Noun $jsonName -Path $log -Type Short -Status Normal
         Write-Log -Verb "downloadFrom" -Noun $downloadFrom -Path $log -Type Short -Status Normal
@@ -116,7 +120,7 @@ if($externalHD.VolumeName -eq $volumeName){
         Get-ChildItem ($epaper + $workDate.ToString("yyyyMMdd") + "\upload") -Filter ($pubcode+$workDate.ToString("yyyyMMdd")+"*.jpg") | ForEach-Object{
 
             $copyFrom = $_.FullName
-            $copyTo   = $exepaper + $_.Name
+            $copyTo   = $destination + $_.Name
             Write-Log -Verb "copyFrom" -Noun $copyFrom -Path $log -Type Short -Status Normal
             Write-Log -Verb "copyTo" -Noun $copyTo -Path $log -Type Short -Status Normal
 
